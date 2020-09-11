@@ -2,13 +2,17 @@ FROM kalilinux/kali-rolling
 
 LABEL maintainer="chris.bensch@gmail.com"
 
-ARG DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 # Update
-RUN apt-get -qq update && apt-get -qqy dist-upgrade \
-&& apt-get -qqy install git zsh wget \
+WORKDIR /opt
+RUN apt-get -y update && apt-get -y dist-upgrade \
+&& apt-get -y install git zsh wget \
 && wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh \
-&& apt-get -qqy install vim kali-linux-top10 net-tools whois netcat exploitdb man-db dirb nikto wpscan uniscan python-pip tor proxychains openjdk-8-jdk \
-&& apt-get -qqy autoremove && apt-get -qqy clean 
+&& apt-get -y install vim net-tools whois netcat exploitdb man-db dirb nikto wpscan uniscan python-pip python3-pip tor proxychains \
+&& apt-get -y autoremove && apt-get -y clean \
+&& git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite.git /opt/peass \
+&& git clone https://github.com/ohpe/juicy-potato.git /opt/juicy-potato \
+&& git clone https://github.com/Tib3rius/AutoRecon.git /opt/autorecon
 
 COPY config/zshrc /root/.zshrc
 COPY config/proxychains.conf /etc/proxychains.conf
