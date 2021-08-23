@@ -1,20 +1,22 @@
-FROM kalilinux/kali-rolling
+FROM kalilinux/kali-bleeding-edge
 
 LABEL maintainer="chris.bensch@gmail.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
-# Update
-WORKDIR /opt
-RUN apt-get -y update && apt-get -y dist-upgrade \
-&& apt-get -y install git zsh wget \
-&& wget --no-check-certificate https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh \
-&& apt-get -y install vim net-tools whois netcat exploitdb man-db dirb nikto wpscan uniscan python-pip python3-pip tor proxychains \
-&& apt-get -y autoremove && apt-get -y clean \
-&& git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite.git /opt/peass \
-&& git clone https://github.com/ohpe/juicy-potato.git /opt/juicy-potato \
-&& git clone https://github.com/Tib3rius/AutoRecon.git /opt/autorecon
 
-COPY config/zshrc /root/.zshrc
-COPY config/proxychains.conf /etc/proxychains.conf
+# Update
+#RUN echo "deb https://kali.download/kali kali-rolling main contrib non-free" > /etc/apt/sources.list
+RUN apt update && apt -y dist-upgrade
+RUN apt -y install metasploit-framework python3-pip zsh zsh-autosuggestions zsh-common zsh-syntax-highlighting amass binwalk bulk-extractor cewl commix crackmapexec dirb dnsenum dnsrecon enum4linux exploitdb gpp-decrypt hash-identifier hashid hydra impacket-scripts john masscan mimikatz nbtscan ncrack netdiscover nfs-common nikto nmap onesixtyone passing-the-hash patator pdf-parser pdfid powershell-empire powersploit python3-impacket python3-scapy responder smbmap snmpcheck sqlmap unix-privesc-check wafw00f webshells weevely wfuzz whatweb windows-binaries winexe wordlists wpscan apache2 cifs-utils dos2unix git hashdeep p7zip-full php php-mysql samba screen python2 seclists curl enum4linux feroxbuster impacket-scripts nbtscan nikto nmap onesixtyone oscanner redis-tools smbclient smbmap snmp sslscan sipvicious tnscmd10g whatweb wkhtmltopdf
+
+RUN service postgresql start && msfdb reinit
+
+RUN git clone --branch beta https://github.com/Tib3rius/AutoRecon /opt/autorecon \
+  && cd /opt/autorecon \
+  && python3 -m pip install -r requirements.txt
+
+RUN git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite.git /opt/peass
+
+WORKDIR /root
 
 ENTRYPOINT ["/bin/zsh"]
