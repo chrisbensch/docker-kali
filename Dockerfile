@@ -13,18 +13,24 @@ RUN wget -P /usr/local/share/fonts/ "https://github.com/romkatv/powerlevel10k-me
   && wget -P /usr/local/share/fonts/ "https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS NF Bold Italic.ttf" \
   && fc-cache -rv
 
+# MSF Setup
 RUN service postgresql start && msfdb reinit
 
+# Special Tools
 RUN git clone --branch beta https://github.com/Tib3rius/AutoRecon /opt/autorecon \
   && cd /opt/autorecon \
   && python3 -m pip install -r requirements.txt
-
 RUN git clone https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite.git /opt/peass
 
+# Volatility3
 RUN pip3 install https://github.com/volatilityfoundation/volatility3/releases/download/v1.0.1/volatility3-1.0.1-py3-none-any.whl
-
+RUN mkdir -p /usr/lib/volatility3/volatility/symbols/
+RUN wget -P /usr/lib/volatility3/volatility/symbols/ https://downloads.volatilityfoundation.org/volatility3/symbols/windows.zip \
+  && wget -P /usr/lib/volatility3/volatility/symbols/ https://downloads.volatilityfoundation.org/volatility3/symbols/mac.zip \
+  && wget -P /usr/lib/volatility3/volatility/symbols/ https://downloads.volatilityfoundation.org/volatility3/symbols/linux.zip
 RUN pip3 install capstone
 
+# Cleanup
 RUN apt -y autoremove && apt -y autoclean
 
 WORKDIR /root
