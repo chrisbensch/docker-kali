@@ -25,6 +25,8 @@ RUN pip3 install https://github.com/volatilityfoundation/volatility3/releases/do
 
 RUN pip3 install capstone
 
+RUN apt -y autoremove && apt -y autoclean
+
 WORKDIR /root
 
 ENTRYPOINT ["/bin/zsh"]
